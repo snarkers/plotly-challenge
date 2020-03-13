@@ -1,5 +1,5 @@
 import os
-
+import datetime
 import pandas as pd
 import numpy as np
 
@@ -21,6 +21,8 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db/bellybutton.sqlite"
 db = SQLAlchemy(app)
 
+
+
 # reflect an existing database into a new model
 Base = automap_base()
 # reflect the tables
@@ -39,7 +41,7 @@ def index():
 
 @app.route("/names")
 def names():
-    """Return a list of sample names."""
+    """Return a list of samplenames."""
 
     # Use Pandas to perform the sql query
     stmt = db.session.query(Samples).statement
@@ -88,6 +90,8 @@ def samples(sample):
     # Filter the data based on the sample number and
     # only keep rows with values above 1
     sample_data = df.loc[df[sample] > 1, ["otu_id", "otu_label", sample]]
+    #Sort by sample
+    sample_data.sort_values(by=sample, ascending = False, inplace= True)
     # Format the data to send as json
     data = {
         "otu_ids": sample_data.otu_id.values.tolist(),
